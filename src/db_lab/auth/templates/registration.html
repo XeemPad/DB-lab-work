@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+    <a class="header" href="/">Главное меню</a>
+    <h3 class="account">{{auth_msg}}</h3>
+</header>
+<div class="main" style="text-align: center;">
+    <h1>Регистрация</h1>
+    <form method="POST" action="">
+        <input name="login" type="text" placeholder="Логин" required /><br />
+        <input name="password" type="password" placeholder="Пароль" required /><br />
+        <input name="password_verify" type="password" placeholder="Повторите пароль" required /><br /><br />
+        <input type="submit" value="Зарегистрироваться"/>
+
+    </form>
+    <br />
+    <a href="{{url_for('auth_bp.auth_index')}}">Назад</a>
+
+</div>
+
+</body>
+</html>

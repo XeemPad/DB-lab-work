@@ -1,0 +1,108 @@
+header {
+    background-color: rgb(12, 52, 7);
+    padding: 10px;
+    display: flex;
+}
+
+
+body {
+    background-color: rgb(23, 23, 23);
+    color: rgb(247, 252, 255);
+    font-family: "Ubuntu", sans-serif;
+}
+
+.main {
+    background-color: rgb(31, 36, 40);
+    margin: auto;
+    padding: 30px;
+}
+
+a {
+    font-size: 20pt;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid rgb(0, 255, 30);
+    color: rgb(173, 222, 255);
+    margin-top: 20px;
+    display: inline-block;
+}
+
+a.header {
+    color: rgb(186, 230, 255);
+    font-size: 20pt;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    display: inline-flex;
+    border: none;
+}
+
+h3.account {
+    color: rgb(240, 240, 240);
+    font-size: 20pt;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    margin-left: auto;
+    display: inline-flex;
+    border: none;
+}
+
+a:hover {
+    color: rgb(255, 100, 100); /* Color on hover */
+}
+
+
+input {
+    font-size: 20pt;
+    margin: 10px auto;
+}
+
+label#prod_category {
+    font-size: 18pt;
+    margin-right: 5px;
+}
+
+input#prod_category {
+    font-size: 16pt;
+}
+
+
+h1 {
+    font-family: "Verdana";
+    font-size: 26pt;
+    font-weight: bold;
+    text-align: center;
+}
+
+h2 {
+    font-family: "Verdana";
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+ul {
+    font-size: 12pt;
+    color: green;
+    display: inline-block;
+    text-align: left;
+}
+
+tr {
+    font-size: 14pt;
+    color: rgb(255, 255, 255);
+}
+
+tr.title {
+    font-size: 16pt;
+    font-weight: bold;
+    color: rgb(255, 152, 152);
+}
+
+td {
+    padding: 4px;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Продукты</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<header>
+    <a class="header" href="/">Главное меню</a>
+    <h3 class="account">{{auth_msg}}</h3>
+</header>
+<body>
+<div>
+    <h2>{{prod_title}}</h2>
+    <table border="1">
+        <tr class="title">
+            <td>Название</td>
+            <td>Цена</td>
+            <td>Количество</td>
+            <td>Единица измерения</td>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{product[0]}}</td>
+            <td>{{product[1]}}</td>
+            <td>{{product[2]}}</td>
+            <td>{{product[3]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+
+[project]
+dependencies = [
+    "blinker==1.8.2",
+    "cffi==1.17.1",
+    "click==8.1.7",
+    "cryptography==43.0.1",
+    "Flask==3.0.3",
+    "itsdangerous==2.2.0",
+    "Jinja2==3.1.4",
+    "MarkupSafe==2.1.5",
+    "pycparser==2.22",
+    "PyMySQL==1.1.1",
+    "Werkzeug==3.0.4",
+]
+requires-python = "==3.12.*"
+name = "DB_lab"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Emil", email = ""},
+]
+readme = "README.md"
+license = {text = "MIT"}
+
+[tool.pdm]
+distribution = false
