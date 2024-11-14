@@ -1,5 +1,5 @@
 SELECT
-    user_id,
+    extuser_id,
     login,
     user_group
 FROM external_user
