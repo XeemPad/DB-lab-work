@@ -1,2 +1,2 @@
-INSERT INTO internal_user VALUES
+INSERT INTO external_user VALUES
 (NULL, '$login', '$password', '$group');

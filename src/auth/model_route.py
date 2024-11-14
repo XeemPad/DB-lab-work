@@ -24,7 +24,7 @@ def model_route_auth_request(db_config, user_input_data, sql_provider):
 
 def model_route_reg_exist_check(db_config, user_input_data, sql_provider):
     error_message = ''
-    _sql = sql_provider.get('check_user.sql', login = user_input_data['login'])
+    _sql = sql_provider.get('check_user.sql', login=user_input_data['login'])
     result = tuple([select_line(db_config, _sql)])
     if result[0]:
         return UserInfoResponse(result, error_message=error_message, status=True)
@@ -33,11 +33,12 @@ def model_route_reg_exist_check(db_config, user_input_data, sql_provider):
 
 def model_route_reg_new(db_config, user_input_data, sql_provider):
     error_message = ''
+    newuser_group = 'buyer'  # buyer by default. Could add supplier?
     encrypted_password = hash_password(user_input_data['password'])
-    _sql = sql_provider.get('create_user.sql',
+    _sql = sql_provider.get('create_extuser.sql',
                             login=user_input_data['login'],
                             password=encrypted_password,
-                            group='user')
+                            group=newuser_group)
     result = insert(db_config, _sql)
     if result:
         return UserInfoResponse(tuple(), error_message=error_message, status=True)
@@ -45,5 +46,5 @@ def model_route_reg_new(db_config, user_input_data, sql_provider):
 
 
 def hash_password(password: str):
-    ''' Ideally should not be sha256 '''
+    # Ideally should not be sha256
     return sha256(str(password).encode()).hexdigest()
