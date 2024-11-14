@@ -8,7 +8,7 @@ import os
 provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))
 
 query_blueprint = Blueprint(
-    'query_blueprint',
+    'query_bp',
     __name__,
     template_folder='templates'
 )

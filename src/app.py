@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, render_template, session, json
 from query.routes import query_blueprint
-from auth.routes import blueprint_auth
+from auth.routes import auth_blueprint
 from auth.auth import check_authorization
 
 
