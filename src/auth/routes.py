@@ -27,9 +27,11 @@ def auth_main():
 
     session['login'] = res_info.result[0]['login']
     session['user_group'] = res_info.result[0]['user_group']
-    user_id = res_info.result[0]['user_id']
+    user_id = res_info.result[0]['user_id'] if 'user_id' in res_info.result[0] \
+        else res_info.result[0]['extuser_id']
     session['user_id'] = str(user_id)
-    print(f'User with user_id {session['user_id']} authorized')
+    print(f'User with user_id {session['user_id']} ({session['user_group']}) authorized')
+
 
     if 'next' in session:
         prev_url = session['next']
