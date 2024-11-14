@@ -17,7 +17,7 @@ with open(os.path.join(cur_dir, "data/db_access.json")) as f:
 app.secret_key = 'dasecretkey'
 
 app.register_blueprint(query_blueprint, url_prefix='/query')
-app.register_blueprint(blueprint_auth, url_prefix='/auth')
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
 
 @app.route('/')

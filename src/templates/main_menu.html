@@ -12,7 +12,7 @@
 <body>
     <div class="main">
         <h1>Главное меню</h1>
-        <a href="{{url_for('query_blueprint.request_products')}}">Работа с запросами</a><br />
+        <a href="{{url_for('query_bp.request_products')}}">Работа с запросами</a><br />
         <a href="{{url_for('auth_bp.auth_index')}}">Авторизация</a><br />
         {% if auth_status %}
             <a href="{{url_for('exit_func')}}">Выход из системы</a> <br />
