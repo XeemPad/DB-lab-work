@@ -56,7 +56,6 @@ a:hover {
     color: rgb(255, 100, 100); /* Color on hover */
 }
 
-
 input {
     font-size: 20pt;
     margin: 10px auto;
@@ -69,6 +68,15 @@ label#prod_category {
 
 input#prod_category {
     font-size: 16pt;
+}
+
+label#checkbox {
+    font-size: 20px;
+}
+
+input#checkbox {
+    transform: scale(1.5); 
+    margin: 5px;
 }
 
 
