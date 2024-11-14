@@ -79,6 +79,10 @@ input#checkbox {
     margin: 5px;
 }
 
+label#inputMonth {
+    font-size: 20px;
+}
+
 
 h1 {
     font-family: "Verdana";

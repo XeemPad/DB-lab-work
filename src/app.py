@@ -1,8 +1,10 @@
+from http.client import ImproperConnectionState
 import os
 
 from flask import Flask, render_template, session, json
 from query.routes import query_blueprint
 from auth.routes import auth_blueprint
+from report.routes import report_blueprint
 from auth.auth import check_authorization
 
 
@@ -18,6 +20,7 @@ app.secret_key = 'dasecretkey'
 
 app.register_blueprint(query_blueprint, url_prefix='/query')
 app.register_blueprint(auth_blueprint, url_prefix='/auth')
+app.register_blueprint(report_blueprint, url_prefix='/report')
 
 
 @app.route('/')
