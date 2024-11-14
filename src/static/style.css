@@ -93,6 +93,12 @@ h2 {
     font-weight: bold;
 }
 
+p.info {
+    color: rgb(223, 0, 0);
+    font-size: 20pt;
+    font-weight: bo
+}
+
 ul {
     font-size: 12pt;
     color: green;

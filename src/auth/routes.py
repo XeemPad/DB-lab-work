@@ -12,7 +12,9 @@ provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))
 
 @blueprint_auth.route('/', methods=['GET'])
 def auth_index():
-    return render_template('login.html', auth_msg=check_authorization()[0])
+    info = session.pop('info', default='')
+    return render_template('login.html', info=info,
+                           auth_msg=check_authorization()[0])
 
 
 @blueprint_auth.route('/', methods=['POST'])
