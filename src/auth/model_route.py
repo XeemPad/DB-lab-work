@@ -12,7 +12,7 @@ class UserInfoResponse:
 
 def model_route_auth_request(db_config, user_input_data, sql_provider):
     error_message = ''
-    encrypted_password = sha256(str(user_input_data['password']).encode()).hexdigest()
+    encrypted_password = hash_password(user_input_data['password'])
     _sql = sql_provider.get('internal_user.sql', login = user_input_data['login'], 
                             password=encrypted_password)
     result = tuple([select_line(db_config, _sql)])
@@ -33,7 +33,7 @@ def model_route_reg_exist_check(db_config, user_input_data, sql_provider):
 
 def model_route_reg_new(db_config, user_input_data, sql_provider):
     error_message = ''
-    encrypted_password = sha256(str(user_input_data['password']).encode('ascii')).hexdigest() 
+    encrypted_password = hash_password(user_input_data['password'])
     _sql = sql_provider.get('create_user.sql',
                             login=user_input_data['login'],
                             password=encrypted_password,
@@ -42,3 +42,8 @@ def model_route_reg_new(db_config, user_input_data, sql_provider):
     if result:
         return UserInfoResponse(tuple(), error_message=error_message, status=True)
     return UserInfoResponse(tuple(), error_message='', status=False)
+
+
+def hash_password(password: str):
+    ''' Ideally should not be sha256 '''
+    return sha256(str(password).encode()).hexdigest()

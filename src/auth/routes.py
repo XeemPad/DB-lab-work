@@ -4,7 +4,6 @@ from database.sql_provider import SQLProvider
 import os
 from auth.model_route import model_route_auth_request, model_route_reg_exist_check, model_route_reg_new
 from auth.auth import check_authorization
-from  hashlib import sha256
 
 
 blueprint_auth = Blueprint('auth_bp', __name__, template_folder='templates')
@@ -29,8 +28,8 @@ def auth_main():
     session['login'] = res_info.result[0]['login']
     session['user_group'] = res_info.result[0]['user_group']
     user_id = res_info.result[0]['user_id']
-    session['user_id'] = sha256(str(user_id).encode('ascii')).hexdigest()
-    print(f'User with hashed user_id {session['user_id']} authorized')
+    session['user_id'] = str(user_id)
+    print(f'User with user_id {session['user_id']} authorized')
 
     if 'next' in session:
         prev_url = session['next']
@@ -63,4 +62,3 @@ def registration_main():
     print("Регистрация успешна")
 
     return render_template('reg_success.html', auth_msg=check_authorization()[0])
-
