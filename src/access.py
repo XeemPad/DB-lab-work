@@ -9,7 +9,19 @@ def login_required(func):
     @wraps(func)  # Preserves the original function's metadata and docstring.
     def wrapper(*args, **kwargs):
         if 'user_id' in session:
+            return func(*args, **kwargs)  # то продолжаем выполнение функции
+            
+        # Если не авторизован, по редиректим на авторизацию
+        session['next'] = request.url  # потом вернемся на предыдущую страницу
+        session['info'] = 'Для доступа к данной странице необходимо авторизоваться'
+        return redirect(url_for('auth_bp.auth_index'))
+    return wrapper
 
+
+def group_required(func):
+    @wraps(func)  # Preserves the original function's metadata and docstring.
+    def wrapper(*args, **kwargs):
+        if 'user_id' in session:  # If logged in
             cur_user_group = session['user_group']  # роль пользователя
             available_bps = current_app.config['db_access'][cur_user_group] # доступные ему блюпринты
             requested_bp = request.blueprint  # куда пользователь хочет попасть

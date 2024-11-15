@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, current_app, request
-from access import login_required
+from access import group_required
 from query.model_route import get_prods_from_db
 from auth.auth import check_authorization
 
@@ -15,12 +15,12 @@ query_blueprint = Blueprint(
 
 
 @query_blueprint.route('/', methods=['GET'])
-@login_required
+@group_required
 def request_products():
     return render_template("input_category.html", auth_msg=check_authorization()[0])
 
 @query_blueprint.route('/', methods=['POST'])
-@login_required
+@group_required
 def output_products():
     request_data = request.form
     res_info = get_prods_from_db(current_app.config['db_config'], request_data, provider)
