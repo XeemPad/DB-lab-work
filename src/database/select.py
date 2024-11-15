@@ -1,6 +1,7 @@
 # функции связанные с выполнением запроса в базу данных
 
-import re
+from turtle import st
+
 from database.DBcm import DBContextManager
 
 
@@ -66,3 +67,20 @@ def insert(db_config: dict, _sql: str):
             return result
     return False
 
+
+def stored_procedure(db_config: dict, procedure_name: str, *args) -> str:
+    print(stored_procedure, procedure_name, *args)
+
+    with DBContextManager(db_config) as cursor:
+        if cursor is None:
+            raise CursorError("Cursor could not be created")
+        else:
+            cursor.callproc(procedure_name, (*args, ))  # call stored procedure
+            
+            status = cursor.fetchone()[0]
+            
+            print('Status: ', status)
+
+            return status 
+            
+    return 'with clause was finished or skipped'

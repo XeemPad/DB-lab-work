@@ -12,8 +12,8 @@
 <body>
     <div class="main">
         <h1>Главное меню</h1>
-        <a href="{{url_for('report_bp.create_report_orders')}}">Создание отчётов</a><br />
-        <a href="{{url_for('report_bp.create_report_orders')}}">Просмотр отчётов</a><br />
+        <a href="{{url_for('report_bp.request_report_orders')}}">Создание отчётов</a><br />
+        <a href="{{url_for('report_bp.get_report_orders')}}">Просмотр отчётов</a><br />
         <a href="{{url_for('query_bp.request_products')}}">Работа с запросами</a><br />
         <a href="{{url_for('auth_bp.auth_index')}}">Авторизация</a><br />
         {% if auth_status %}

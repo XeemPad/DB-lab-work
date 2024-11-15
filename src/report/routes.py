@@ -1,10 +1,12 @@
+from os import error
+import re
+import sched
 from flask import Blueprint, render_template, current_app, request
 from access import login_required
 from auth.auth import check_authorization
+from report.model_route import check_report_exists, create_new_report, \
+    get_report_orders_db, ReportInfoResponse
 
-from database.sql_provider import SQLProvider
-import os
-provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))
 
 report_blueprint = Blueprint(
     'report_bp',
@@ -13,15 +15,60 @@ report_blueprint = Blueprint(
 )
 
 
-@report_blueprint.route('/', methods=['GET'])
+@report_blueprint.route('/create', methods=['GET'])
 @login_required
-def create_report_orders():
+def request_report_orders():
+    ''' Page with a form for user to input desired period '''
     return render_template("create_report.html", 
                            auth_msg=check_authorization()[0])
 
 
-@report_blueprint.route('/', methods=['GET'])
+@report_blueprint.route('/create', methods=['POST'])
+@login_required
+def create_report_orders():
+    ''' Function that invokes the creation of report in DB '''
+    request_data = request.form
+    
+    # Execute procedure:
+    res_info: ReportInfoResponse = create_new_report(current_app.config['db_config'], 
+                                                     request_data)
+    if res_info.status:
+        return render_template("report_status.html", status_title='Отчёт успешно создан',
+                                auth_msg=check_authorization()[0])
+    return render_template("report_status.html", status_title='Отчёт не был создан',
+                            status_msg=res_info.error_message,
+                            auth_msg=check_authorization()[0])
+
+
+@report_blueprint.route('/view', methods=['GET'])
 @login_required
 def get_report_orders():
-    return render_template("dynamic_report.html", 
+    return render_template("get_report.html", 
+                           auth_msg=check_authorization()[0])
+
+
+@report_blueprint.route('/view', methods=['POST'])
+@login_required
+def extract_report_orders():
+    ''' Function that extracts report from DB '''
+    request_data = request.form
+    # Check whether report for such data already exists
+    exist_info: ReportInfoResponse = check_report_exists(current_app.config['db_config'], 
+                                                         request_data)
+    if exist_info.status:  # if not exists
+        return render_template("report_status.html", 
+                               status_title='Отчёт на данный период не существует',
+                               status_msg=exist_info.error_message,
+                               auth_msg=check_authorization()[0])
+    
+    res_info: ReportInfoResponse = get_report_orders_db(current_app.config['db_config'], 
+                                                        request_data)
+    if not res_info.status:
+        return render_template("report_status.html", 
+                               status_title='Отчёт не найден',
+                               status_msg=exist_info.error_message,
+                               auth_msg=check_authorization()[0])
+    rows, schema = res_info.result
+    return render_template("dynamic_report.html", table_title=f'Отчёт за {request_data}',
+                           header=schema, rows=rows,
                            auth_msg=check_authorization()[0])
