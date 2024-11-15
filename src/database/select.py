@@ -75,7 +75,10 @@ def stored_procedure(db_config: dict, procedure_name: str, *args) -> str:
         if cursor is None:
             raise CursorError("Cursor could not be created")
         else:
-            cursor.callproc(procedure_name, (*args, ))  # call stored procedure
+            # we need to store status in a variable
+            
+            # cursor.callproc(procedure_name, (*args, ))  # DOESN'T WORK
+            cursor.execute(f'CALL {procedure_name} ({', '.join(map(str, args))})')
             
             status = cursor.fetchone()[0]
             

@@ -69,6 +69,11 @@ def extract_report_orders():
                                status_msg=exist_info.error_message,
                                auth_msg=check_authorization()[0])
     rows, schema = res_info.result
-    return render_template("dynamic_report.html", table_title=f'Отчёт за {request_data}',
+    if rows[0][1] == 0:  # If no orders were done that month
+        return render_template("report_status.html", 
+                               status_title='В данный месяц не было совершено ни одного заказа',
+                               auth_msg=check_authorization()[0])
+    return render_template("dynamic_report.html", 
+                           table_title=f'Отчёт за {request_data['year_month']}',
                            header=schema, rows=rows,
                            auth_msg=check_authorization()[0])
