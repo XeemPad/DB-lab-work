@@ -1,7 +1,6 @@
 # функции связанные с выполнением запроса в базу данных
 
-from turtle import st
-
+from typing import Tuple
 from database.DBcm import DBContextManager
 
 
@@ -10,23 +9,24 @@ class CursorError(Exception):
 
 
 def select_list(db_config: dict, _sql: str):
+    try:
+        with DBContextManager(db_config) as cursor:
+            if not cursor:
+                raise CursorError("Cursor could not be created")
+            else:
+                print('Trying to execute an SQL query')
+                cursor.execute(_sql)
+                result = cursor.fetchall()
+                # print(cursor.description)
+                # в cursor.description[0] лежат имена полей из таблицы
 
-    with DBContextManager(db_config) as cursor:
-        if cursor is None:
-            raise CursorError("Cursor could not be created")
-        else:
-            print('Trying to execute an SQL query')
-            cursor.execute(_sql)
-            result = cursor.fetchall()
-            # print(cursor.description)
-            # в cursor.description[0] лежат имена полей из таблицы
+                schema = [item[0] for item in cursor.description]
+                return result, schema
+    except CursorError as ce:
+        return [], str(ce)
 
-            schema = [item[0] for item in cursor.description]
-            return result, schema
-    print('With clause was exited early in select.py/select_list')
-    return [], []
 
-def select_dict(db_config: dict, _sql: str):
+def select_dict(db_config: dict, _sql: str) -> list[dict]:
     result, schema = select_list(db_config, _sql)
     result_dict = []
     for item in result:
@@ -34,49 +34,55 @@ def select_dict(db_config: dict, _sql: str):
     return result_dict
 
 
-def select_line(db_config: dict, _sql: str):
+def select_line(db_config: dict, _sql: str) -> Tuple[bool, dict | str]:
     print(select_line, _sql)
+    try:
+        with DBContextManager(db_config) as cursor:
 
-    with DBContextManager(db_config) as cursor:
+            if cursor is None:
+                raise CursorError("Cursor could not be created")
+            else:
+                cursor.execute(_sql)
+                result = cursor.fetchall()
+                if not result:
+                    return True, dict()
+                result = result[0]
 
-        if cursor is None:
-            raise CursorError("Cursor could not be created")
-        else:
-            cursor.execute(_sql)
-            result = cursor.fetchall()
-            if not result:
-                return dict()
-            result = result[0]
+                res_dict = dict([(item[0], result[i]) for i, item in enumerate(cursor.description)])
+                return True, res_dict
+    except CursorError as ce:
+        return False, str(ce)
 
-            res_dict = dict([(item[0], result[i]) for i, item in enumerate(cursor.description)])
-            return res_dict
-
-    print('With clause was exited early in select.py/select_line')
-    return dict()
+    return False, 'Something went wrong'
 
 
-def insert(db_config: dict, _sql: str):
+def insert(db_config: dict, _sql: str) -> Tuple[bool, int | str]:
     print(insert, _sql)
-    with DBContextManager(db_config) as cursor:
+    try:
+        with DBContextManager(db_config) as cursor:
 
-        if cursor is None:
-            raise CursorError("Cursor could not be created")
-        else:
-            result = cursor.execute(_sql)
+            if cursor is None:
+                raise CursorError("Cursor could not be created")
+            else:
+                result = cursor.execute(_sql)
 
-            return result
-    return False
+                return True, result
+    except CursorError as ce:
+        return False, str(ce)
+
+    return False, 'Something went wrong'
 
 
 def stored_procedure(db_config: dict, procedure_name: str, *args) -> bool:
     print(stored_procedure, procedure_name, *args)
 
-    with DBContextManager(db_config) as cursor:
-        if cursor is None:
-            raise CursorError("Cursor could not be created")
-        else:
-            
-            cursor.callproc(procedure_name, (*args, ))
-
-            
+    try:
+        with DBContextManager(db_config) as cursor:
+            if not cursor:
+                raise CursorError("Cursor could not be created")
+            else:
+                cursor.callproc(procedure_name, (*args, ))
+    except CursorError:
+        return False
+    
     return True
