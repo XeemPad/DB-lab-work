@@ -1,0 +1,1 @@
+DELETE FROM `order_line` WHERE `order_id` = $delid;

@@ -1,1 +1,0 @@
-DELETE FROM `order_product` WHERE `order_id` = $delid;

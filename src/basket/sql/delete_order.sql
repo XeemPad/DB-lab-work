@@ -1,1 +1,1 @@
-DELETE FROM `user_order` WHERE `order_id` = $delid;
+DELETE FROM `order` WHERE `order_id` = $delid;

@@ -1,1 +1,2 @@
-INSERT INTO `user_order` (`user_id`,`order_date`) VALUES ($e_user_id, '$e_order_date');
+INSERT INTO `order` (order_datetime, total_cost_rubles, buyer_id) 
+    VALUES ('$order_date', $total_cost, $e_user_id);
