@@ -12,6 +12,7 @@ dependencies = [
     "pycparser==2.22",
     "PyMySQL==1.1.1",
     "Werkzeug==3.0.4",
+    "redis>=5.2.0",
 ]
 requires-python = "==3.12.*"
 name = "DB_lab"

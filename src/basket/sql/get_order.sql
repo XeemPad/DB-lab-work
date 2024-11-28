@@ -1,0 +1,1 @@
+SELECT MAX(`order_id`) as `order_id` FROM `user_order` WHERE `user_id` = $e_user_id AND `order_date` = '$e_order_date';

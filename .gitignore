@@ -1,7 +1,8 @@
 Диаграммы
 # No test.py
 test.py
-
+DB_*/
+new/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

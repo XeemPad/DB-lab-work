@@ -1,0 +1,1 @@
+SELECT `prod_id`, `prod_name`, `prod_price`, `prod_measure` FROM `product` WHERE `prod_id` = $e_prod_id;
