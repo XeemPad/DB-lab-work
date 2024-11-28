@@ -19,10 +19,11 @@ def check_report_exists(db_config, user_input_data):
     print("sql =", _sql)
     status, dict_ = select_line(db_config, _sql)
     if status:
-        return ReportInfoResponse(tuple(), 
+        print(status, dict_)
+        return ReportInfoResponse((dict_,), 
                                   error_message='Отчёт для указанных данных уже существует', 
-                                  status=False)
-    return ReportInfoResponse(tuple(dict_), error_message='', status=True)
+                                  status=True)
+    return ReportInfoResponse((dict_,), error_message='', status=False)
     
 
 def create_new_report(db_config, user_input_data):
@@ -38,6 +39,7 @@ def get_report_orders_db(db_config, user_input_data):
     _sql = provider.get('get_report.sql', year=year, month=month)
     print("sql =", _sql)
     result, schema_or_error = select_list(db_config, _sql)
+    print(result)
     if not result:
         return ReportInfoResponse(tuple(result), 
                                   error_message=f'Отчёт не найден. {schema_or_error}', 

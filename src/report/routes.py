@@ -29,7 +29,7 @@ def create_report_orders():
     # Check whether report for such data already exists
     exist_info: ReportInfoResponse = check_report_exists(current_app.config['db_config'], 
                                                          request_data)
-    if not exist_info.status:  # if exists
+    if exist_info.status:  # if exists
         return render_template("report_status.html", 
                                status_title='Отчёт на данный период уже существует',
                                status_msg=exist_info.error_message,
@@ -61,7 +61,7 @@ def extract_report_orders():
     # Check whether report for such data already exists
     exist_info: ReportInfoResponse = check_report_exists(current_app.config['db_config'], 
                                                          request_data)
-    if exist_info.status:  # if not exists
+    if not exist_info.status:  # if not exists
         return render_template("report_status.html", 
                                status_title='Отчёт на данный период не существует',
                                status_msg=exist_info.error_message,
@@ -72,8 +72,9 @@ def extract_report_orders():
     if not res_info.status:
         return render_template("report_status.html", 
                                status_title='Отчёт не найден',
-                               status_msg=exist_info.error_message,
+                               status_msg=res_info.error_message,
                                auth_msg=check_authorization()[0])
+    
     rows, schema = res_info.result
     if rows[0][1] == 0:  # If no orders were done that month
         return render_template("report_status.html", 

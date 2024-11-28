@@ -10,13 +10,14 @@
 </head>
 <header>
     <a class="header" href="/">Главное меню</a>
+    <a class="header" href="{{url_for('basket_bp.basket_index')}}">Покупки</a>
     <h3 class="account">{{auth_msg}}</h3>
 </header>
 <body>
 <div class="main" style="width:1000px;">
     <h2>Заказ создан</h2>
     <hr />
-    <span>Ваш заказ №{{order_id}} был успешно создан. Подробности по заказу доступны в личном кабинете.</span>
+    <span>Ваш заказ №{{order_id}} был успешно создан</span>
 </div>
 
 </body>
