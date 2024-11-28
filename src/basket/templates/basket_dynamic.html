@@ -7,7 +7,7 @@
     {% if show_amount %}
         <span>Количество: {{item['amount']}}</span><br>
         <form method="POST" action="">
-            <input type="hidden" name="product_display" value="{{item['prod_id']}}" />
+            <input type="hidden" name="product_display" value="{{item['id']}}" />
             <button type="submit" name="product_display_minus" value="minus" class="plusminus">-</button>
             <button type="submit" name="product_display_plus" value="plus" class="plusminus">+</button>
         </form>
@@ -15,7 +15,7 @@
 
     {% if show_form %}
         <form method="POST" action="">
-            <input type="hidden" name="product_display" value="{{item['prod_id']}}" id="hidden"/>
+            <input type="hidden" name="product_display" value="{{item['id']}}" id="hidden"/>
             <input type="submit" value="Купить" name="buy" id="buy" />
         </form>
     {% endif %}

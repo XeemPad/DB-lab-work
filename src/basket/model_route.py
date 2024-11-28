@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from database.select import select_list, insert, delete
-from datetime import date
+from datetime import datetime
 from database.DBcm import DBContextManager
 from pymysql import Error
 
@@ -13,8 +13,8 @@ class ProductInfoRespronse:
 
 
 def model_route_transaction_order(db_config : dict, sql_provider, basket : dict, user_id: int):
-    ddate = date.today()
-    _sql = sql_provider.get('create_order.sql', e_user_id = user_id, e_order_date = ddate)
+    ddate = datetime.now()
+    _sql = sql_provider.get('create_order.sql', e_user_id=user_id, e_order_date=ddate)
     print(_sql)
     result = insert(db_config, _sql)
     if not result:
@@ -23,7 +23,7 @@ def model_route_transaction_order(db_config : dict, sql_provider, basket : dict,
     order_id = select_list(db_config,_sql)[0][0]
     print(basket)
     for key, value in basket.items():
-        _sql = sql_provider.get('insert_order_product.sql',
+        _sql = sql_provider.get('insert_order_line.sql',
                                 e_order_id = order_id[0],
                                 e_prod_id = int(key),
                                 e_amount = int(value))
@@ -39,7 +39,7 @@ def model_route_transaction_order(db_config : dict, sql_provider, basket : dict,
 
 
 def transaction_order(db_config : dict, sql_provider, basket : dict, user_id: int):
-    ddate = date.today()
+    ddate = datetime.today()
     order_id = None
     with DBContextManager(db_config) as cursor:
         cursor.conn(autocommit=False)
@@ -54,7 +54,7 @@ def transaction_order(db_config : dict, sql_provider, basket : dict, user_id: in
         order_id = cursor.lastrowid
 
         for key, value in basket.items():
-            _sql = sql_provider.get('insert_order_product.sql',
+            _sql = sql_provider.get('insert_order_line.sql',
                                     e_order_id=order_id[0],
                                     e_prod_id=int(key),
                                     e_amount=int(value))

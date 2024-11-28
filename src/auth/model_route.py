@@ -5,7 +5,7 @@ from hashlib import sha256
 
 @dataclass
 class UserInfoResponse:
-    result: tuple
+    result: dict | str
     error_message: str
     status: bool
 
@@ -23,8 +23,8 @@ def model_route_auth_request(db_config, user_input_data, sql_provider):
     status, dict_ = select_line(db_config, _sql)
     print(f'result: {dict_}')
     if status:
-        return UserInfoResponse(tuple(dict_), error_message='', status=True)
-    return UserInfoResponse(tuple(dict_), error_message=f'No user found using query:\n{_sql}. {dict_}', 
+        return UserInfoResponse(dict_, error_message='', status=True)
+    return UserInfoResponse(dict_, error_message=f'No user found using query:\n{_sql}. {dict_}', 
                             status=False)
 
 
@@ -33,8 +33,8 @@ def model_route_reg_exist_check(db_config, user_input_data, sql_provider):
 
     status, dict_ = select_line(db_config, _sql)
     if status:
-        return UserInfoResponse(tuple(dict_), error_message='', status=True)
-    return UserInfoResponse(tuple(dict_), error_message=f'No user found using query:\n{_sql}. {status}', 
+        return UserInfoResponse(dict_, error_message='', status=True)
+    return UserInfoResponse(dict_, error_message=f'No user found using query:\n{_sql}. {status}', 
                             status=False)
 
 
@@ -46,10 +46,10 @@ def model_route_reg_new(db_config, user_input_data, sql_provider):
                             login=user_input_data['login'],
                             password=encrypted_password,
                             group=newuser_group)
-    result = insert(db_config, _sql)
-    if result:
-        return UserInfoResponse(tuple(), error_message='', status=True)
-    return UserInfoResponse(tuple(), error_message=f'No user found using query:\n{_sql}',
+    status, result = insert(db_config, _sql)
+    if status:
+        return UserInfoResponse(dict(), error_message='', status=True)
+    return UserInfoResponse(dict(), error_message=f'No user found using query:\n{_sql}. {result}',
                             status=False)
 
 

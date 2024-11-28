@@ -1,6 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, current_app, request
 from database.sql_provider import SQLProvider
 import os
+from access import group_required
 from cache.wrapper import fetch_from_cache
 from database.select import select_dict
 from basket.model_route import model_route_transaction_order
@@ -11,6 +12,7 @@ basket_blueprint = Blueprint('basket_bp', __name__, template_folder='templates')
 provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))
 
 @basket_blueprint.route('/', methods=['GET'])
+@group_required
 def basket_index():
     db_config = current_app.config['db_config']
     cache_config = current_app.config['cache_config']
@@ -20,12 +22,13 @@ def basket_index():
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
     current_basket = session.get('basket',{}) # get basket or return default={}
-    print("basketonload:",session.get('basket',{}))
+    print("basketonload: ", session.get('basket', {}))
     current_basket = form_basket(current_basket)
     
     return render_template('basket_dynamic.html', products=products, basket=current_basket)
 
 @basket_blueprint.route('/', methods=['POST'])
+@group_required
 def basket_main():
     db_config = current_app.config['db_config']
     print("BASKET=", session.get('basket', []))
@@ -76,18 +79,20 @@ def basket_main():
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/clear_basket')
+@group_required
 def clear_basket():
     if session.get('basket',{}):
         session.pop('basket')
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/save_order')
+@group_required
 def save_order():
     print("a")
     if not session.get('basket',{}):
         return redirect(url_for('basket_bp.basket_index'))
-    if not session.get('user_id',""):
-        return render_template("error.html", message="Вы не авторизованы на сайте, авторизируйтесь для регистрации заказа")
+    # if not session.get('user_id',""):
+    #     return render_template("error.html", message="Вы не авторизованы на сайте, авторизируйтесь для регистрации заказа")
     print("Order success")
     current_basket = session.get('basket', {})
     user_id = session.get('user_id', -1)
@@ -96,7 +101,7 @@ def save_order():
         clear_basket()
         return render_template("order_finish.html", order_id = result.result[0])
     else:
-        return render_template("error.html", message="Заказ не был создан")
+        return render_template("error.html", error_title="Заказ не был создан")
 
 
 def form_basket(current_basket : dict):

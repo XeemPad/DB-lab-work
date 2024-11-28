@@ -27,10 +27,10 @@ def auth_main():
         return render_template('auth_error.html', error_title='Не удалось войти', 
                                error_msg='Неверный логин или пароль', auth_msg=check_authorization()[0])
 
-    session['login'] = res_info.result[0]['login']
-    session['user_group'] = res_info.result[0]['user_group']
-    user_id = res_info.result[0]['user_id'] if 'user_id' in res_info.result[0] \
-        else res_info.result[0]['extuser_id']
+    res_dict: dict = res_info.result
+    session['login'] = res_dict['login']
+    session['user_group'] = res_dict['user_group']
+    user_id = res_dict['user_id'] if 'user_id' in res_dict else res_dict['extuser_id']
     session['user_id'] = str(user_id)
     print(f'User with user_id {session['user_id']} ({session['user_group']}) authorized')
 
