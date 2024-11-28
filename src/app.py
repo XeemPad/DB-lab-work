@@ -28,12 +28,15 @@ def exit_func():
 
 def register_configs(app):
     cur_dir = os.path.dirname(__file__)
-    
+
     with open(os.path.join(cur_dir, "data/dbconfig.json")) as f:
         app.config['db_config'] = json.load(f)
 
     with open(os.path.join(cur_dir, "data/db_access.json")) as f:
         app.config['db_access'] = json.load(f)
+
+    with open(os.path.join(cur_dir, "data/cache_config.json")) as f:
+        app.config['cache_config'] = json.load(f)
 
 
 def register_blueprints(app):
@@ -44,5 +47,6 @@ def register_blueprints(app):
 
 
 if __name__ == '__main__':
-    app.run(host="127.0.0.1", port=5001, debug=True)
     register_configs(app)
+    register_blueprints(app)
+    app.run(host="127.0.0.1", port=5001, debug=True)

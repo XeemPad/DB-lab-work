@@ -96,10 +96,6 @@ def save_order():
         return render_template("error.html", message="Заказ не был создан")
 
 
-
-
-
-
 def form_basket(current_basket : dict):
     basket = []
     for k,v in current_basket.items():
