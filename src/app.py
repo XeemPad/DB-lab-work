@@ -9,20 +9,8 @@ from basket.routes import basket_blueprint
 from auth.auth import check_authorization
 
 
-cur_dir = os.path.dirname(__file__)
-
 app = Flask(__name__)
-with open(os.path.join(cur_dir, "data/dbconfig.json")) as f:
-    app.config['db_config'] = json.load(f)
-
-with open(os.path.join(cur_dir, "data/db_access.json")) as f:
-    app.config['db_access'] = json.load(f)
 app.secret_key = 'dasecretkey'
-
-app.register_blueprint(query_blueprint, url_prefix='/query')
-app.register_blueprint(auth_blueprint, url_prefix='/auth')
-app.register_blueprint(report_blueprint, url_prefix='/report')
-app.register_blueprint(basket_blueprint, url_prefix='/basket')
 
 
 @app.route('/')
@@ -38,5 +26,23 @@ def exit_func():
                            auth_msg=check_authorization()[0])
 
 
+def register_configs(app):
+    cur_dir = os.path.dirname(__file__)
+    
+    with open(os.path.join(cur_dir, "data/dbconfig.json")) as f:
+        app.config['db_config'] = json.load(f)
+
+    with open(os.path.join(cur_dir, "data/db_access.json")) as f:
+        app.config['db_access'] = json.load(f)
+
+
+def register_blueprints(app):
+    app.register_blueprint(query_blueprint, url_prefix='/query')
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(report_blueprint, url_prefix='/report')
+    app.register_blueprint(basket_blueprint, url_prefix='/basket')
+
+
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=5001, debug=True)
+    register_configs(app)

@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from database.select import select_list
+from database.select import select_list, insert, delete
 from datetime import date
-from database.insert import insert_one
-from database.delete import delete
 from database.DBcm import DBContextManager
 from pymysql import Error
 
@@ -18,7 +16,7 @@ def model_route_transaction_order(db_config : dict, sql_provider, basket : dict,
     ddate = date.today()
     _sql = sql_provider.get('create_order.sql', e_user_id = user_id, e_order_date = ddate)
     print(_sql)
-    result = insert_one(db_config, _sql)
+    result = insert(db_config, _sql)
     if not result:
         return ProductInfoRespronse(tuple(), error_message="Заказ не был создан", status=False)
     _sql = sql_provider.get('get_order.sql', e_user_id=user_id, e_order_date=ddate)
@@ -30,7 +28,7 @@ def model_route_transaction_order(db_config : dict, sql_provider, basket : dict,
                                 e_prod_id = int(key),
                                 e_amount = int(value))
         print(_sql)
-        result = insert_one(db_config, _sql)
+        result = insert(db_config, _sql)
         if not result:
             _sql = sql_provider.get('delete_order.sql', delid = order_id)
             delete(db_config, _sql)
@@ -50,7 +48,7 @@ def transaction_order(db_config : dict, sql_provider, basket : dict, user_id: in
         try:
             cursor.execute(_sql)
         except Error as err:
-            print("error in transaction_order():", error.args)
+            print("error in transaction_order():", err.args)
             return ProductInfoRespronse(tuple(), error_message="Заказ не был создан", status=False)
 
         order_id = cursor.lastrowid
@@ -60,7 +58,7 @@ def transaction_order(db_config : dict, sql_provider, basket : dict, user_id: in
                                     e_order_id=order_id[0],
                                     e_prod_id=int(key),
                                     e_amount=int(value))
-            result = insert_one(db_config, _sql)
+            result = insert(db_config, _sql)
             # обработка ошибки происходит в database.insert
             if not result:
                 return ProductInfoRespronse(tuple(), error_message="Заказ не был создан", status=False)

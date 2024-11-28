@@ -6,7 +6,6 @@ from database.select import select_dict
 from basket.model_route import model_route_transaction_order
 
 
-
 basket_blueprint = Blueprint('basket_bp', __name__, template_folder='templates')
 
 provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))

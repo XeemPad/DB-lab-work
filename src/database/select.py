@@ -74,6 +74,18 @@ def insert(db_config: dict, _sql: str) -> Tuple[bool, int | str]:
     return False, 'Something went wrong'
 
 
+def delete(db_config: dict, _sql: str):
+    try:
+        with DBContextManager(db_config) as cursor:
+            if cursor is None:
+                raise ValueError("Cursor not created")
+            else:
+                cursor.execute(_sql)
+    except Exception as e:
+        return False, str(e)
+    return True, 'success'
+
+
 def stored_procedure(db_config: dict, procedure_name: str, *args) -> bool:
     print(stored_procedure, procedure_name, *args)
 
