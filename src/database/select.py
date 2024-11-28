@@ -8,7 +8,7 @@ class CursorError(Exception):
     pass
 
 
-def select_list(db_config: dict, _sql: str):
+def select_list(db_config: dict, _sql: str) -> Tuple[tuple, list | str]:
     try:
         with DBContextManager(db_config) as cursor:
             if not cursor:
@@ -23,7 +23,8 @@ def select_list(db_config: dict, _sql: str):
                 schema = [item[0] for item in cursor.description]
                 return result, schema
     except CursorError as ce:
-        return [], str(ce)
+        return tuple(), str(ce)
+    return tuple(), 'Something went wrong'
 
 
 def select_dict(db_config: dict, _sql: str) -> list[dict]:
