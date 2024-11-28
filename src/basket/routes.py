@@ -1,7 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, current_app, request
 from database.sql_provider import SQLProvider
 import os
-from access import group_required
+from access import group_required, check_authorization
 from cache.wrapper import fetch_from_cache
 from database.select import select_dict
 from basket.model_route import model_route_transaction_order
@@ -25,7 +25,8 @@ def basket_index():
     print("basketonload: ", session.get('basket', {}))
     current_basket = form_basket(current_basket)
     
-    return render_template('basket_dynamic.html', products=products, basket=current_basket)
+    return render_template('basket_dynamic.html', products=products, basket=current_basket,
+                           auth_msg=check_authorization()[0])
 
 @basket_blueprint.route('/', methods=['POST'])
 @group_required
@@ -45,14 +46,14 @@ def basket_main():
         # сессия не запоминает изменения значений по ключу, только добавление или удалени
         # поэтому нужно вручную указывать изменение сессии
 
-        if str(product['prod_id']) in current_basket:
-            prid = product['prod_id']
+        if str(product['id']) in current_basket:
+            prid = product['id']
             amount = int(session['basket'][str(prid)])
             session['basket'][str(prid)] = str(amount+1)
             session.modified = True
         else:
             print("NEW PRODUCT")
-            prid = product['prod_id']
+            prid = product['id']
             session['basket'][str(prid)] = '1'
             print(session['basket'])
             session.modified = True
@@ -61,19 +62,19 @@ def basket_main():
         # increasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][str(product['prod_id'])])
-        session['basket'][str(product['prod_id'])] = str(amount + 1)
+        amount = int(session['basket'][str(product['id'])])
+        session['basket'][str(product['id'])] = str(amount + 1)
         session.modified = True
 
     if request.form.get('product_display_minus'):
         # decreasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][str(product['prod_id'])])
+        amount = int(session['basket'][str(product['id'])])
         if amount == 1:
-            session['basket'].pop(str(product['prod_id']))
+            session['basket'].pop(str(product['id']))
         else:
-            session['basket'][str(product['prod_id'])] = str(amount-1)
+            session['basket'][str(product['id'])] = str(amount-1)
         session.modified = True
 
     return redirect(url_for('basket_bp.basket_index'))
@@ -99,9 +100,11 @@ def save_order():
     result = model_route_transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
     if result.status:
         clear_basket()
-        return render_template("order_finish.html", order_id = result.result[0])
+        return render_template("order_finish.html", order_id = result.result[0],
+                               auth_msg=check_authorization()[0])
     else:
-        return render_template("error.html", error_title="Заказ не был создан")
+        return render_template("error.html", error_title="Заказ не был создан",
+                               auth_msg=check_authorization()[0])
 
 
 def form_basket(current_basket : dict):

@@ -80,6 +80,14 @@ input#buy:hover {
     margin: 10px auto;
 }
 
+button.plusminus {
+    width: 40px; 
+    height: 40px;
+    font-size: 17pt;
+    font-weight: bold;
+}
+
+
 label#prod_category {
     font-size: 18pt;
     margin-right: 5px;
@@ -165,6 +173,10 @@ span.item {
 span.price {
     font-size: 16px;
     font-weight: bold;
+    color: rgb(33, 33, 33);
+}
+
+span.amount {
     color: rgb(33, 33, 33);
 }
 

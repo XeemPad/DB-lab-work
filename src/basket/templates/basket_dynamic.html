@@ -5,7 +5,7 @@
     <span class="item">{{item['prod_name']}}</span><br>
     <span class="price">{{item['prod_price']}}&nbsp; руб/{{item['prod_amount']}} {{item['prod_measure']}}</span><br>
     {% if show_amount %}
-        <span>Количество: {{item['amount']}}</span><br>
+        <span class="amount">Количество: {{item['amount']}}</span>
         <form method="POST" action="">
             <input type="hidden" name="product_display" value="{{item['id']}}" />
             <button type="submit" name="product_display_minus" value="minus" class="plusminus">-</button>
