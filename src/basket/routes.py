@@ -14,12 +14,15 @@ provider = SQLProvider(os.path.join(os.path.dirname(__file__), 'sql'))
 def basket_index():
     db_config = current_app.config['db_config']
     cache_config = current_app.config['cache_config']
+
     cache_select_dict = fetch_from_cache('items_cached', cache_config)(select_dict)
+
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
     current_basket = session.get('basket',{}) # get basket or return default={}
     print("basketonload:",session.get('basket',{}))
     current_basket = form_basket(current_basket)
+    
     return render_template('basket_dynamic.html', products=products, basket=current_basket)
 
 @basket_blueprint.route('/', methods=['POST'])
