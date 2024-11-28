@@ -17,8 +17,6 @@ def select_list(db_config: dict, _sql: str) -> Tuple[tuple, list | str]:
                 print('Trying to execute an SQL query')
                 cursor.execute(_sql)
                 result = cursor.fetchall()
-                # print(cursor.description)
-                # в cursor.description[0] лежат имена полей из таблицы
 
                 schema = [item[0] for item in cursor.description]
                 return result, schema
@@ -73,6 +71,16 @@ def insert(db_config: dict, _sql: str) -> Tuple[bool, int | str]:
 
     return False, 'Something went wrong'
 
+def update(db_config: dict, _sql: str):
+    try:
+        with DBContextManager(db_config) as cursor:
+            if cursor is None:
+                raise ValueError("Cursor not created")
+            else:
+                cursor.execute(_sql)
+    except Exception as e:
+        return False, str(e)
+    return True, 'success'
 
 def delete(db_config: dict, _sql: str):
     try:

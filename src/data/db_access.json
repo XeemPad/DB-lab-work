@@ -1,5 +1,5 @@
 {
-    "manager": ["basket_bp", "auth_bp", "report_bp", "query_bp"],
-    "admin": ["basket_bp", "auth_bp", "report_bp"],
+    "manager": ["auth_bp", "report_bp", "query_bp"],
+    "admin": ["auth_bp", "report_bp"],
     "buyer": ["basket_bp"]
 }

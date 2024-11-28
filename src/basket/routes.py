@@ -4,7 +4,7 @@ import os
 from access import group_required, check_authorization
 from cache.wrapper import fetch_from_cache
 from database.select import select_dict
-from basket.model_route import model_route_transaction_order
+from basket.model_route import transaction_order
 
 
 basket_blueprint = Blueprint('basket_bp', __name__, template_folder='templates')
@@ -47,14 +47,14 @@ def basket_main():
         # поэтому нужно вручную указывать изменение сессии
 
         if str(product['id']) in current_basket:
-            prid = product['id']
-            amount = int(session['basket'][str(prid)])
-            session['basket'][str(prid)] = str(amount+1)
+            prid = str(product['id'])
+            amount = int(session['basket'][prid])
+            session['basket'][prid] = str(amount+1)
             session.modified = True
         else:
             print("NEW PRODUCT")
-            prid = product['id']
-            session['basket'][str(prid)] = '1'
+            prid = str(product['id'])
+            session['basket'][prid] = '1'
             print(session['basket'])
             session.modified = True
 
@@ -74,7 +74,7 @@ def basket_main():
         if amount == 1:
             session['basket'].pop(str(product['id']))
         else:
-            session['basket'][str(product['id'])] = str(amount-1)
+            session['basket'][str(product['id'])] = str(amount - 1)
         session.modified = True
 
     return redirect(url_for('basket_bp.basket_index'))
@@ -97,7 +97,7 @@ def save_order():
     print("Order success")
     current_basket = session.get('basket', {})
     user_id = session.get('user_id', -1)
-    result = model_route_transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
+    result = transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
     if result.status:
         clear_basket()
         return render_template("order_finish.html", order_id = result.result[0],
