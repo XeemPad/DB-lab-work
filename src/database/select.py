@@ -68,22 +68,15 @@ def insert(db_config: dict, _sql: str):
     return False
 
 
-def stored_procedure(db_config: dict, procedure_name: str, *args) -> str:
+def stored_procedure(db_config: dict, procedure_name: str, *args) -> bool:
     print(stored_procedure, procedure_name, *args)
 
     with DBContextManager(db_config) as cursor:
         if cursor is None:
             raise CursorError("Cursor could not be created")
         else:
-            # we need to store status in a variable
             
-            # cursor.callproc(procedure_name, (*args, ))  # DOESN'T WORK
-            cursor.execute(f'CALL {procedure_name} ({', '.join(map(str, args))})')
-            
-            status = cursor.fetchone()[0]
-            
-            print('Status: ', status)
+            cursor.callproc(procedure_name, (*args, ))
 
-            return status 
             
-    return 'with clause was finished or skipped'
+    return True

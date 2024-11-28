@@ -29,11 +29,8 @@ def create_new_report(db_config, user_input_data):
     year, month = [int(el) for el in user_input_data['year_month'].split('-')]
     status = stored_procedure(db_config, 'create_popularity_report', year, month)
     if not status:
-        return ReportInfoResponse(tuple(), 'Status of procedure wasn\'t returned', False)
-    if status.lower() == 'success':
-        return ReportInfoResponse(tuple(), '', True)
-    else:
-        return ReportInfoResponse(tuple(), status, False)
+        return ReportInfoResponse(tuple(), 'Something went wrong', False)
+    return ReportInfoResponse(tuple(), '', True)
 
 
 def get_report_orders_db(db_config, user_input_data):

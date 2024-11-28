@@ -26,6 +26,14 @@ def request_report_orders():
 def create_report_orders():
     ''' Function that invokes the creation of report in DB '''
     request_data = request.form
+    # Check whether report for such data already exists
+    exist_info: ReportInfoResponse = check_report_exists(current_app.config['db_config'], 
+                                                         request_data)
+    if not exist_info.status:  # if exists
+        return render_template("report_status.html", 
+                               status_title='Отчёт на данный период уже существует',
+                               status_msg=exist_info.error_message,
+                               auth_msg=check_authorization()[0])
     
     # Execute procedure:
     res_info: ReportInfoResponse = create_new_report(current_app.config['db_config'], 
