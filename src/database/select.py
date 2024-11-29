@@ -44,7 +44,7 @@ def select_line(db_config: dict, _sql: str) -> Tuple[bool, dict | str]:
                 cursor.execute(_sql)
                 result = cursor.fetchall()
                 if not result:
-                    return True, dict()
+                    return False, dict()
                 result = result[0]
 
                 res_dict = dict([(item[0], result[i]) for i, item in enumerate(cursor.description)])
