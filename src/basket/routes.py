@@ -21,17 +21,18 @@ def basket_index():
 
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
-    current_basket = session.get('basket', {})[session['user_id']]
+    current_basket = session.get('basket', {})
     print("basketonload: ", session.get('basket', {}))
-    current_basket = form_basket(current_basket)
+    current_basket = form_basket()
     
-    return render_template('basket_dynamic.html', products=products, basket=current_basket,
+    return render_template('basket_dynamic.html', products=products, basket=current_basket[session['user_id']],
                            auth_msg=check_authorization()[0])
 
 @basket_blueprint.route('/', methods=['POST'])
 @group_required
 def basket_main():
     db_config = current_app.config['db_config']
+    print(session.get('basket', {-1: {}}))
     current_basket = session.get('basket', {-1: {}})[session['user_id']]
     print("BASKET=", current_basket)
     if request.form.get('buy'):
@@ -114,7 +115,8 @@ def form_basket(current_basket : dict):
         product = select_dict(current_app.config['db_config'], _sql)[0]
         product['amount'] = v
         basket.append(product)
-    return {session['user_id']: basket}
+    session['basket'] = {session['user_id']: basket}
+    return session['basket']
 
 
 
