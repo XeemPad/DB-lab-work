@@ -1,3 +1,4 @@
+from math import prod
 import re
 from flask import Blueprint, session, redirect, url_for, render_template, current_app, request
 from database.sql_provider import SQLProvider
@@ -47,7 +48,11 @@ def basket_main():
         if not 'basket' in session:
             session['basket'][user_id] = {user_id: {}}
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
-        product = select_dict(db_config, _sql)[0]
+        products = select_dict(db_config, _sql)
+        if not products:
+            return render_template('error.html', error_title='Не удалось получить товар', 
+                                   error_msg='Возможно, БД не работает', auth_msg=check_authorization()[0])
+        product = products[0]
         print(product)
         
         # сессия поддерживает сериализацию через json, поэтому ключ может быть только строчкой
@@ -93,8 +98,11 @@ def clear_basket():
     user_id = session['user_id']
     basket = session.get('basket', {user_id: {}})[user_id]
     if basket:
-        session['basket'][user_id] = {}  # new
-    
+        session['basket'].pop(user_id)
+        print(session['basket'])
+        session['basket'][user_id] = {}
+        session.modified = True
+     
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/save_order')
@@ -107,7 +115,7 @@ def save_order():
     print("Order success")
     current_basket = session.get('basket', {})
     user_id = session.get('user_id', -1)
-    result = transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
+    result = transaction_order(current_app.config['db_config'], provider, current_basket[user_id], user_id)
     if result.status:
         clear_basket()
         return render_template("order_finish.html", order_id = result.result[0],

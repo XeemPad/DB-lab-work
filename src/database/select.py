@@ -33,8 +33,17 @@ def select_dict(db_config: dict, _sql: str) -> list[dict]:
     return result_dict
 
 
-def select_line(db_config: dict, _sql: str) -> Tuple[bool, dict | str]:
+def select_line(db_config: dict, _sql: str, cursor=None) -> Tuple[bool, dict | str]:
     print(select_line, _sql)
+    if cursor:
+        cursor.execute(_sql)
+        result = cursor.fetchall()
+        if not result:
+            return False, dict()
+        result = result[0]
+
+        res_dict = dict([(item[0], result[i]) for i, item in enumerate(cursor.description)])
+        return True, res_dict
     try:
         with DBContextManager(db_config) as cursor:
 
@@ -55,8 +64,11 @@ def select_line(db_config: dict, _sql: str) -> Tuple[bool, dict | str]:
     return False, 'Something went wrong'
 
 
-def insert(db_config: dict, _sql: str) -> Tuple[bool, int | str]:
+def insert(db_config: dict, _sql: str, cursor=None) -> Tuple[bool, int | str]:
     print(insert, _sql)
+    if cursor:
+        result = cursor.execute(_sql)
+        return True, result
     try:
         with DBContextManager(db_config) as cursor:
 
@@ -71,13 +83,16 @@ def insert(db_config: dict, _sql: str) -> Tuple[bool, int | str]:
 
     return False, 'Something went wrong'
 
-def update(db_config: dict, _sql: str):
+def update(db_config: dict, _sql: str, cursor=None):
     try:
-        with DBContextManager(db_config) as cursor:
-            if cursor is None:
-                raise ValueError("Cursor not created")
-            else:
-                cursor.execute(_sql)
+        if cursor:
+            cursor.execute(_sql)
+        else:
+            with DBContextManager(db_config) as cursor:
+                if cursor is None:
+                    raise ValueError("Cursor not created")
+                else:
+                    cursor.execute(_sql)
     except Exception as e:
         return False, str(e)
     return True, 'success'
