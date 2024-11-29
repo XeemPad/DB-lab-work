@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, session, redirect, url_for, render_template, current_app, request
 from database.sql_provider import SQLProvider
 import os
@@ -21,18 +22,18 @@ def basket_index():
 
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
-    current_basket = session.get('basket', {})
-    print("basketonload: ", session.get('basket', {}))
+    basket = session.get('basket', {session['user_id']: {}})
+    print("basketonload: ", basket)
     current_basket = form_basket()
     
-    return render_template('basket_dynamic.html', products=products, basket=current_basket[session['user_id']],
+    return render_template('basket_dynamic.html', products=products, basket=current_basket,
                            auth_msg=check_authorization()[0])
 
 @basket_blueprint.route('/', methods=['POST'])
 @group_required
 def basket_main():
     db_config = current_app.config['db_config']
-    print(session.get('basket', {-1: {}}))
+    print("AAAAAAAAAAAAAAAAAAA", session.get('basket', {session['user_id']: {}}))
     current_basket = session.get('basket', {-1: {}})[session['user_id']]
     print("BASKET=", current_basket)
     if request.form.get('buy'):
@@ -108,15 +109,17 @@ def save_order():
                                auth_msg=check_authorization()[0])
 
 
-def form_basket(current_basket : dict):
+def form_basket():
+    if session['user_id'] not in session['basket']:
+        return []
     basket = []
-    for k, v in current_basket.items():
+    for k, v in session['basket'][session['user_id']].items():
         _sql = provider.get('one_good.sql', e_prod_id=k)
         product = select_dict(current_app.config['db_config'], _sql)[0]
         product['amount'] = v
         basket.append(product)
     session['basket'] = {session['user_id']: basket}
-    return session['basket']
+    return basket
 
 
 
