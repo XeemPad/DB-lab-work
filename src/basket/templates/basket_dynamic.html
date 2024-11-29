@@ -38,18 +38,18 @@
     <h3 class="account">{{auth_msg}}</h3>
 </header>
 <body>
-<div class="main" style="width:1000px;">
+<div class="main" style="width:70%;">
     <div class="container">
         <a href="{{url_for('basket_bp.save_order')}}">Сделать заказ</a><br>
         <div class="row">
             <div class="col-md-8">
                 <h2>Доступные товары</h2><br>
                 {% if products %}
-                {% for product in products %}
-                {{ render_item(product, show_form = True, show_amount = False) }}
-                {% endfor %}
+                    {% for product in products %}
+                    {{ render_item(product, show_form = True, show_amount = False) }}
+                    {% endfor %}
                 {% else %}
-                <span>Нет доступных товаров</span>
+                    <span>Нет доступных товаров</span>
                 {% endif %}
             </div>
             <div class="col-md-4">

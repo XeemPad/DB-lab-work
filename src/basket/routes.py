@@ -82,14 +82,13 @@ def basket_main():
 @basket_blueprint.route('/clear_basket')
 @group_required
 def clear_basket():
-    if session.get('basket',{}):
+    if session.get('basket', {}):
         session.pop('basket')
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/save_order')
 @group_required
 def save_order():
-    print("a")
     if not session.get('basket',{}):
         return redirect(url_for('basket_bp.basket_index'))
     # if not session.get('user_id',""):
@@ -109,7 +108,7 @@ def save_order():
 
 def form_basket(current_basket : dict):
     basket = []
-    for k,v in current_basket.items():
+    for k, v in current_basket.items():
         _sql = provider.get('one_good.sql', e_prod_id=k)
         product = select_dict(current_app.config['db_config'], _sql)[0]
         product['amount'] = v
