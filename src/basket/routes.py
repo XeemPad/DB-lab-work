@@ -21,9 +21,9 @@ def basket_index():
 
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
-    current_basket = session.get('basket', {}) # get basket or return default={}
+    current_basket = session.get('basket', {})[session['user_id']]
     print("basketonload: ", session.get('basket', {}))
-    current_basket = form_basket(current_basket)[session['user_id']]
+    current_basket = form_basket(current_basket)
     
     return render_template('basket_dynamic.html', products=products, basket=current_basket,
                            auth_msg=check_authorization()[0])
@@ -32,15 +32,15 @@ def basket_index():
 @group_required
 def basket_main():
     db_config = current_app.config['db_config']
-    print("BASKET=", session.get('basket', []))
+    current_basket = session.get('basket', {-1: {}})[session['user_id']]
+    print("BASKET=", current_basket)
     if request.form.get('buy'):
         # adding to basket
         if not 'basket' in session:
-            session['basket'] = dict()
+            session['basket'][session['user_id']] = {session['user_id']: {}}
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
         print(product)
-        current_basket = session.get('basket', {-1: {}})[session['user_id']]
         
         # сессия поддерживает сериализацию через json, поэтому ключ может быть только строчкой
         # сессия не запоминает изменения значений по ключу, только добавление или удалени
@@ -48,33 +48,33 @@ def basket_main():
 
         if str(product['id']) in current_basket:
             prid = str(product['id'])
-            amount = int(session['basket'][prid])
-            session['basket'][prid] = str(amount+1)
+            amount = int(session['basket'][session['user_id']][prid])
+            session['basket'][session['user_id']][prid] = str(amount+1)
             session.modified = True
         else:
             print("NEW PRODUCT")
             prid = str(product['id'])
-            session['basket'][prid] = '1'
-            print(session['basket'])
+            session['basket'][session['user_id']][prid] = '1'
+            print(session['basket'][session['user_id']])
             session.modified = True
 
     if request.form.get('product_display_plus'):
         # increasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][str(product['id'])])
-        session['basket'][str(product['id'])] = str(amount + 1)
+        amount = int(session['basket'][session['user_id']][str(product['id'])])
+        session['basket'][session['user_id']][str(product['id'])] = str(amount + 1)
         session.modified = True
 
     if request.form.get('product_display_minus'):
         # decreasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][str(product['id'])])
+        amount = int(session['basket'][session['user_id']][str(product['id'])])
         if amount == 1:
-            session['basket'].pop(str(product['id']))
+            session['basket'][session['user_id']].pop(str(product['id']))
         else:
-            session['basket'][str(product['id'])] = str(amount - 1)
+            session['basket'][session['user_id']][str(product['id'])] = str(amount - 1)
         session.modified = True
 
     return redirect(url_for('basket_bp.basket_index'))
