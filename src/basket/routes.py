@@ -89,10 +89,12 @@ def basket_main():
 
 @basket_blueprint.route('/clear_basket')
 @group_required
-def clear_basket(user_id: int):
-    basket = session.get(user_id, {})
+def clear_basket():
+    user_id = session['user_id']
+    basket = session.get('basket', {user_id: {}})[user_id]
     if basket:
-        session.pop('user_id')
+        session['basket'][user_id] = {}  # new
+    
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/save_order')
@@ -107,7 +109,7 @@ def save_order():
     user_id = session.get('user_id', -1)
     result = transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
     if result.status:
-        clear_basket(session['user_id'])
+        clear_basket()
         return render_template("order_finish.html", order_id = result.result[0],
                                auth_msg=check_authorization()[0])
     else:
