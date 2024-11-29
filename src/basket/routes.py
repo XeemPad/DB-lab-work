@@ -22,7 +22,8 @@ def basket_index():
 
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
-    basket = session.get('basket', {session['user_id']: {}})
+    session['basket'] = session.get('basket', {session['user_id']: {}})
+    basket = session['basket']
     print("basketonload: ", basket)
     current_basket = form_basket()
     
@@ -33,13 +34,18 @@ def basket_index():
 @group_required
 def basket_main():
     db_config = current_app.config['db_config']
-    print("AAAAAAAAAAAAAAAAAAA", session.get('basket', {session['user_id']: {}}))
-    current_basket = session.get('basket', {-1: {}})[session['user_id']]
+    user_id = session['user_id']
+    session['basket'] = session.get('basket', {user_id: {}})
+    if user_id not in session['basket']:
+        session['basket'][user_id] = {}
+    basket = session['basket']
+    print(basket)
+    current_basket = basket[user_id]
     print("BASKET=", current_basket)
     if request.form.get('buy'):
         # adding to basket
         if not 'basket' in session:
-            session['basket'][session['user_id']] = {session['user_id']: {}}
+            session['basket'][user_id] = {user_id: {}}
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
         print(product)
@@ -50,33 +56,33 @@ def basket_main():
 
         if str(product['id']) in current_basket:
             prid = str(product['id'])
-            amount = int(session['basket'][session['user_id']][prid])
-            session['basket'][session['user_id']][prid] = str(amount+1)
+            amount = int(session['basket'][user_id][prid])
+            session['basket'][user_id][prid] = str(amount+1)
             session.modified = True
         else:
             print("NEW PRODUCT")
             prid = str(product['id'])
-            session['basket'][session['user_id']][prid] = '1'
-            print(session['basket'][session['user_id']])
+            session['basket'][user_id][prid] = '1'
+            print(session['basket'][user_id])
             session.modified = True
 
     if request.form.get('product_display_plus'):
         # increasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][session['user_id']][str(product['id'])])
-        session['basket'][session['user_id']][str(product['id'])] = str(amount + 1)
+        amount = int(session['basket'][user_id][str(product['id'])])
+        session['basket'][user_id][str(product['id'])] = str(amount + 1)
         session.modified = True
 
     if request.form.get('product_display_minus'):
         # decreasing count in basket
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
-        amount = int(session['basket'][session['user_id']][str(product['id'])])
+        amount = int(session['basket'][user_id][str(product['id'])])
         if amount == 1:
-            session['basket'][session['user_id']].pop(str(product['id']))
+            session['basket'][user_id].pop(str(product['id']))
         else:
-            session['basket'][session['user_id']][str(product['id'])] = str(amount - 1)
+            session['basket'][user_id][str(product['id'])] = str(amount - 1)
         session.modified = True
 
     return redirect(url_for('basket_bp.basket_index'))
@@ -110,7 +116,7 @@ def save_order():
 
 
 def form_basket():
-    if session['user_id'] not in session['basket']:
+    if 'basket' not in session or session['user_id'] not in session['basket']:
         return []
     basket = []
     for k, v in session['basket'][session['user_id']].items():
@@ -118,7 +124,6 @@ def form_basket():
         product = select_dict(current_app.config['db_config'], _sql)[0]
         product['amount'] = v
         basket.append(product)
-    session['basket'] = {session['user_id']: basket}
     return basket
 
 
