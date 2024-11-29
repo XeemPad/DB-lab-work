@@ -21,7 +21,9 @@ def main_menu():
 
 @app.route('/exit')
 def exit_func():
+    basket = session['basket']
     session.clear()
+    session['basket'] = basket
     return render_template('error.html', error_title='Вы вышли из аккаунта', 
                            auth_msg=check_authorization()[0])
 
