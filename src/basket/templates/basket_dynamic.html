@@ -3,7 +3,7 @@
  <div class="goods">
     <div class="good">
     <span class="item">{{item['prod_name']}}</span><br>
-    <span class="price">{{item['prod_price']}}&nbsp; руб/{{item['prod_amount']}} {{item['prod_measure']}}</span><br>
+    <span class="price">{{item['prod_price']}} руб/{{item['prod_amount']}} {{item['prod_measure']}}</span><br>
     {% if show_amount %}
         <span class="amount">Количество: {{item['amount']}}</span>
         <form method="POST" action="">
@@ -42,7 +42,7 @@
     <div class="container">
         <a href="{{url_for('basket_bp.save_order')}}">Сделать заказ</a><br>
         <div class="row">
-            <div class="col-md-8">
+            <div class="basket col-md-8">
                 <h2>Доступные товары</h2><br>
                 {% if products %}
                     {% for product in products %}
@@ -52,7 +52,7 @@
                     <span>Нет доступных товаров</span>
                 {% endif %}
             </div>
-            <div class="col-md-4">
+            <div class="basket col-md-4">
                 <h2>Корзина</h2><br>
                 <a href="{{url_for('basket_bp.clear_basket')}}">Очистить корзину</a><br>
                 {% if basket %}
