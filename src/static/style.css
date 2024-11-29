@@ -160,6 +160,7 @@ div.good {
 }
 
 div.row {
+    display: flex;
     padding-top: 20px;
     margin-top: 4px;
 }
@@ -182,4 +183,12 @@ span.amount {
 
 span#info {
     margin: 10px auto;
+}
+
+div.basket {
+    margin: 0 10px;
+}
+
+div.col-md-8 {
+    width: 65%;
 }
