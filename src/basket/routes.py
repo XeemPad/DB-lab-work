@@ -21,9 +21,9 @@ def basket_index():
 
     _sql = provider.get('all_goods.sql')
     products = cache_select_dict(db_config, _sql)
-    current_basket = session.get('basket',{}) # get basket or return default={}
+    current_basket = session.get('basket', {}) # get basket or return default={}
     print("basketonload: ", session.get('basket', {}))
-    current_basket = form_basket(current_basket)
+    current_basket = form_basket(current_basket)[session['user_id']]
     
     return render_template('basket_dynamic.html', products=products, basket=current_basket,
                            auth_msg=check_authorization()[0])
@@ -40,8 +40,8 @@ def basket_main():
         _sql = provider.get('one_good.sql', e_prod_id=int(request.form['product_display']))
         product = select_dict(db_config, _sql)[0]
         print(product)
-        current_basket = session.get('basket', {})
-
+        current_basket = session.get('basket', {-1: {}})[session['user_id']]
+        
         # сессия поддерживает сериализацию через json, поэтому ключ может быть только строчкой
         # сессия не запоминает изменения значений по ключу, только добавление или удалени
         # поэтому нужно вручную указывать изменение сессии
@@ -81,9 +81,10 @@ def basket_main():
 
 @basket_blueprint.route('/clear_basket')
 @group_required
-def clear_basket():
-    if session.get('basket', {}):
-        session.pop('basket')
+def clear_basket(user_id: int):
+    basket = session.get(user_id, {})
+    if basket:
+        session.pop('user_id')
     return redirect(url_for('basket_bp.basket_index'))
 
 @basket_blueprint.route('/save_order')
@@ -98,7 +99,7 @@ def save_order():
     user_id = session.get('user_id', -1)
     result = transaction_order(current_app.config['db_config'], provider, current_basket, user_id)
     if result.status:
-        clear_basket()
+        clear_basket(session['user_id'])
         return render_template("order_finish.html", order_id = result.result[0],
                                auth_msg=check_authorization()[0])
     else:
@@ -113,7 +114,7 @@ def form_basket(current_basket : dict):
         product = select_dict(current_app.config['db_config'], _sql)[0]
         product['amount'] = v
         basket.append(product)
-    return basket
+    return {session['user_id']: basket}
 
 
 
